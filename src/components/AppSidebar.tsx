@@ -290,29 +290,43 @@ const SidebarContent = ({
     >
       <div className="h-16 flex items-center justify-between px-5 border-b border-gray-100/30 dark:border-gray-800/30">
         <Link to="/" className="flex items-center gap-3 overflow-hidden group">
-          <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-indigo-600 via-violet-600 to-purple-600 text-white flex items-center justify-center font-bold shadow-lg shadow-indigo-500/20 dark:shadow-indigo-900/30 transition-all duration-300 group-hover:shadow-indigo-500/40 dark:group-hover:shadow-indigo-900/50 group-hover:scale-105">
-            <span className="bg-clip-text text-transparent bg-gradient-to-tr from-white to-white/80 font-extrabold">PR</span>
+          <div className={cn(
+            "rounded-lg overflow-hidden shadow-lg shadow-indigo-500/20 dark:shadow-indigo-900/30 transition-all duration-300 group-hover:shadow-indigo-500/40 dark:group-hover:shadow-indigo-900/50 group-hover:scale-105",
+            isOpen ? "h-9 w-9" : "h-10 w-10"
+          )}>
+            <img src="/logo.png" alt="Logo" className="h-full w-full object-cover" />
           </div>
+
           <span className={cn(
             "font-semibold text-lg text-gray-800 dark:text-white transition-all duration-300 whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300",
             isOpen ? "opacity-100" : "opacity-0 w-0"
           )}>
-            WORK
-            <span className="text-indigo-600 dark:text-indigo-400 ml-1 font-bold">CENTRA</span>
+            Hyper
+            <span className="text-indigo-600 dark:text-indigo-400 ml-1 font-bold">Lans</span>
           </span>
         </Link>
         
+        
         <Button 
-          variant="ghost" 
-          size="icon"
-          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-gray-800/50 rounded-lg transition-all duration-200 ease-in-out"
-          onClick={toggleSidebar}
+        variant="ghost" 
+        size="icon"
+        className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-gray-800/50 rounded-lg transition-all duration-200 ease-in-out"
+        onClick={toggleSidebar}
         >
-          {isOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+        {isOpen ? 
+        <ChevronLeft className={cn(
+        "transition-all duration-300",
+        isOpen ? "h-5 w-5" : "h-6 w-6"
+        )} /> : 
+        <ChevronRight className={cn(
+        "transition-all duration-300",
+        isOpen ? "h-5 w-5" : "h-6 w-6"
+        )} />
+        }
         </Button>
       </div>
       
-      <div className="py-5 px-3 space-y-8 overflow-y-auto max-h-[calc(100vh-60px-64px)] premium-scrollbar">
+      <div className="py-5 px-3 space-y-8 overflow-y-auto max-h-[calc(100vh-60px-140px)] premium-scrollbar">
         <div>
           <div className={cn(
             "text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-4",
@@ -339,12 +353,62 @@ const SidebarContent = ({
                   >
                     {isActive && (
                       <>
+                        <span className="absolute inset-0 bg-[url('data:image/svg+xml;base66,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSI+PC9yZWN0PjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSI+PC9yZWN0Pjwvc3ZnPg==')]"></span>
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-white/30 via-white/60 to-white/30"></div>
+                      </>
+                    )}
+                    <item.icon className={cn(
+                      "transition-all duration-300 ease-out z-10",
+                      isOpen ? "h-5 w-5" : "h-6 w-6",
+                      isActive ? "text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
+                      "group-hover:scale-110"
+                    )} />
+                    <span className={cn(
+                      "transition-all duration-300 ml-3.5 whitespace-nowrap font-medium",
+                      isOpen ? "opacity-100" : "opacity-0 w-0 ml-0"
+                    )}>
+                      {item.title}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        
+        {/* Management section moved before Tools section */}
+        <div>
+          <div className={cn(
+            "text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-4",
+            isOpen ? "block" : "hidden"
+          )}>
+            Management
+          </div>
+          <ul className="space-y-1.5">
+            {secondaryMenuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              
+              return (
+                <li key={item.title}>
+                  <Link
+                    to={item.path}
+                    title={!isOpen ? item.title : undefined}
+                    className={cn(
+                      "flex items-center px-4 py-2.5 rounded-lg transition-all duration-200 group relative overflow-hidden",
+                      isOpen ? "justify-start" : "justify-center",
+                      isActive 
+                        ? "bg-gradient-to-r from-indigo-600/90 to-violet-600/90 text-white shadow-lg shadow-indigo-500/20 dark:shadow-indigo-900/30" 
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
+                    )}
+                  >
+                    {isActive && (
+                      <>
                         <span className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSI+PC9yZWN0PjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSI+PC9yZWN0Pjwvc3ZnPg==')]"></span>
                         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-white/30 via-white/60 to-white/30"></div>
                       </>
                     )}
                     <item.icon className={cn(
-                      "h-5 w-5 transition-all duration-300 ease-out z-10",
+                      "transition-all duration-300 ease-out z-10",
                       isActive ? "text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
                       "group-hover:scale-110"
                     )} />
@@ -370,7 +434,7 @@ const SidebarContent = ({
               "text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3",
               isOpen ? "block" : "hidden"
             )}>
-              Tools
+              Pro Tools
             </div>
             {isOpen && (
               <div className="flex items-center gap-1.5 bg-gray-100/80 dark:bg-gray-800/80 rounded-full px-3 py-1">
@@ -403,13 +467,13 @@ const SidebarContent = ({
                       </>
                     )}
                     <item.icon className={cn(
-                      "h-5 w-5 transition-all duration-300 ease-out z-10",
+                      "transition-all duration-300 ease-out z-10",
                       isActive ? "text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-violet-600 dark:group-hover:text-violet-400",
                       "group-hover:scale-110"
                     )} />
                     
                     {item.premium && !isOpen && (
-                      <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-indigo-500 rounded-full border border-white dark:border-gray-900 z-20"></div>
+                      <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full border border-white dark:border-gray-900 z-20"></div>
                     )}
                     
                     <div className={cn(
@@ -427,86 +491,28 @@ const SidebarContent = ({
             })}
           </ul>
         </div>
-        
-        <div>
-          <div className={cn(
-            "text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-4",
-            isOpen ? "block" : "hidden"
-          )}>
-            Management
-          </div>
-          <ul className="space-y-1.5">
-            {secondaryMenuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <li key={item.title}>
-                  <Link
-                    to={item.path}
-                    title={!isOpen ? item.title : undefined}
-                    className={cn(
-                      "flex items-center px-4 py-2.5 rounded-lg transition-all duration-200 group relative overflow-hidden",
-                      isOpen ? "justify-start" : "justify-center",
-                      isActive 
-                        ? "bg-gradient-to-r from-indigo-600/90 to-violet-600/90 text-white shadow-lg shadow-indigo-500/20 dark:shadow-indigo-900/30" 
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-white"
-                    )}
-                  >
-                    {isActive && (
-                      <>
-                        <span className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSI+PC9yZWN0PjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSI+PC9yZWN0Pjwvc3ZnPg==')]"></span>
-                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-white/30 via-white/60 to-white/30"></div>
-                      </>
-                    )}
-                    <item.icon className={cn(
-                      "h-5 w-5 transition-all duration-300 ease-out z-10",
-                      isActive ? "text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400",
-                      "group-hover:scale-110"
-                    )} />
-                    <span className={cn(
-                      "transition-all duration-300 ml-3.5 whitespace-nowrap font-medium",
-                      isOpen ? "opacity-100" : "opacity-0 w-0 ml-0"
-                    )}>
-                      {item.title}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
       </div>
       
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100/30 dark:border-gray-800/30">
-        {/* {isOpen && (
-          <div className="mb-4 px-2 py-3 bg-gradient-to-r from-indigo-50/80 to-violet-50/80 dark:from-indigo-950/40 dark:to-violet-950/40 rounded-lg border border-indigo-100/50 dark:border-indigo-800/30 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSgzMCkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgxMDUsMTA1LDI1NSwwLjAzKSI+PC9yZWN0PjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSI+PC9yZWN0Pjwvc3ZnPg==')]"></div>
-            <h4 className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-1 flex items-center">
-              <Crown className="h-3.5 w-3.5 text-amber-500 mr-2" />
-              PROFLO Pro
-            </h4>
-            <p className="text-xs text-indigo-700/90 dark:text-indigo-300/90 mb-2">Unlock premium features to enhance your productivity</p>
-            <Button 
-              size="sm" 
-              className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 shadow-md shadow-indigo-500/20 dark:shadow-indigo-900/30 group-hover:shadow-indigo-500/30 dark:group-hover:shadow-indigo-900/40 transition-all duration-300"
-            >
-              Upgrade Now
-            </Button>
-          </div>
-        )} */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100/30 dark:border-gray-800/30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg">
         <div className="space-y-2">
           <Button
             onClick={toggleTheme}
             variant="ghost"
             className={cn(
-              "w-full justify-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 rounded-lg",
+              "w-full justify-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 rounded-lg transition-all duration-300",
               isOpen && "justify-start"
             )}
             title={!isOpen ? (theme === "dark" ? "Light Mode" : "Dark Mode") : undefined}
           >
             {theme === "dark" ? 
-              <Sun className="h-5 w-5 text-amber-500" /> : 
-              <Moon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <Sun className={cn(
+                "text-amber-500 transition-all duration-300",
+                isOpen ? "h-5 w-5" : "h-6 w-6"
+              )} /> : 
+              <Moon className={cn(
+                "text-indigo-600 dark:text-indigo-400 transition-all duration-300",
+                isOpen ? "h-5 w-5" : "h-6 w-6"
+              )} />
             }
             <span className={cn(
               "transition-all duration-300 ml-3",
@@ -520,12 +526,15 @@ const SidebarContent = ({
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 rounded-lg",
+                "w-full justify-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 rounded-lg transition-all duration-300",
                 isOpen && "justify-start"
               )}
               title={!isOpen ? "Logout" : undefined}
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className={cn(
+                "transition-all duration-300",
+                isOpen ? "h-5 w-5" : "h-6 w-6"
+              )} />
               <span className={cn(
                 "transition-all duration-300 ml-3",
                 isOpen ? "opacity-100" : "opacity-0 w-0 ml-0"

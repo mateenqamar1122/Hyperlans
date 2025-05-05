@@ -33,9 +33,9 @@ const LandingNavbar = () => {
       }`}
     >
       <div className="container flex h-20 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ">
           <Link to="/" className="flex items-center space-x-3 group">
-          <div className="relative overflow-hidden rounded-lg p-1.5 bg-gradient-to-br from-primary/80 to-brand-blue transition-all duration-300 group-hover:from-brand-blue group-hover:to-primary">
+          <div>
   <img
     src="/logo.png"
     alt="Logo"

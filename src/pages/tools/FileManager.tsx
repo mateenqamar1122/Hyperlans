@@ -51,6 +51,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 // Icons
 import {
@@ -63,9 +65,18 @@ import {
   Archive,
   Loader2,
   Upload,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  Image as ImageIcon,
+  FileVideo,
+  FileAudio,
+  File,
+  LayoutGrid,
+  LayoutList,
+  ChevronRight
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BreadcrumbFolder {
   id: string;
@@ -615,65 +626,92 @@ const FileManager = () => {
 
   // Memoize the empty state rendering to prevent unnecessary re-renders
   const renderEmptyState = useMemo(() => (
-    <Card className="w-full">
-      <CardContent className="flex flex-col items-center justify-center py-12">
-        {searchQuery ? (
-          <>
-            <FolderSearch className="h-16 w-16 text-muted-foreground/60 mb-4" />
-            <h3 className="text-xl font-medium mb-2">No files match your search</h3>
-            <p className="text-muted-foreground">Try a different search term</p>
-          </>
-        ) : (
-          <>
-            {selectedView === 'all' ? (
-              <>
-                <Folder className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">This folder is empty</h3>
-                <p className="text-muted-foreground mb-6">Upload files or create a folder to get started</p>
-                <div className="flex gap-2">
-                  <Button onClick={() => setCreateFolderOpen(true)}>
-                    Create Folder
-                  </Button>
-                  <Button variant="outline" onClick={handleUploadFile}>
-                    Upload Files
-                  </Button>
-                </div>
-              </>
-            ) : selectedView === 'starred' ? (
-              <>
-                <Star className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No starred files</h3>
-                <p className="text-muted-foreground">Star files to find them here</p>
-              </>
-            ) : selectedView === 'recent' ? (
-              <>
-                <Clock className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No recent files</h3>
-                <p className="text-muted-foreground">Your recently accessed files will appear here</p>
-              </>
-            ) : selectedView === 'archived' ? (
-              <>
-                <Archive className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No archived files</h3>
-                <p className="text-muted-foreground">Files you archive will appear here</p>
-              </>
-            ) : selectedView.startsWith('category-') ? (
-              <>
-                <CircleOff className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No files in this category</h3>
-                <p className="text-muted-foreground">Add files to this category to see them here</p>
-              </>
-            ) : (
-              <>
-                <HardDrive className="h-16 w-16 text-muted-foreground/60 mb-4" />
-                <h3 className="text-xl font-medium mb-2">No files found</h3>
-                <p className="text-muted-foreground">Upload files to get started</p>
-              </>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="w-full border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-300">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          {searchQuery ? (
+            <>
+              <div className="p-4 rounded-full bg-gray-100/80 dark:bg-gray-800/80 mb-6">
+                <FolderSearch className="h-12 w-12 text-gray-400 dark:text-gray-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No files match your search</h3>
+              <p className="text-gray-500 dark:text-gray-400">Try a different search term</p>
+            </>
+          ) : (
+            <>
+              {selectedView === 'all' ? (
+                <>
+                  <div className="p-4 rounded-full bg-indigo-100/80 dark:bg-indigo-900/20 mb-6">
+                    <Folder className="h-12 w-12 text-indigo-500 dark:text-indigo-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">This folder is empty</h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">Upload files or create a folder to get started</p>
+                  <div className="flex gap-3">
+                    <Button 
+                      onClick={() => setCreateFolderOpen(true)}
+                      className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      Create Folder
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleUploadFile}
+                      className="border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300"
+                    >
+                      Upload Files
+                    </Button>
+                  </div>
+                </>
+              ) : selectedView === 'starred' ? (
+                <>
+                  <div className="p-4 rounded-full bg-amber-100/80 dark:bg-amber-900/20 mb-6">
+                    <Star className="h-12 w-12 text-amber-500 dark:text-amber-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No starred files</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Star files to find them here</p>
+                </>
+              ) : selectedView === 'recent' ? (
+                <>
+                  <div className="p-4 rounded-full bg-blue-100/80 dark:bg-blue-900/20 mb-6">
+                    <Clock className="h-12 w-12 text-blue-500 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No recent files</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Your recently accessed files will appear here</p>
+                </>
+              ) : selectedView === 'archived' ? (
+                <>
+                  <div className="p-4 rounded-full bg-purple-100/80 dark:bg-purple-900/20 mb-6">
+                    <Archive className="h-12 w-12 text-purple-500 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No archived files</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Files you archive will appear here</p>
+                </>
+              ) : selectedView.startsWith('category-') ? (
+                <>
+                  <div className="p-4 rounded-full bg-rose-100/80 dark:bg-rose-900/20 mb-6">
+                    <CircleOff className="h-12 w-12 text-rose-500 dark:text-rose-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No files in this category</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Add files to this category to see them here</p>
+                </>
+              ) : (
+                <>
+                  <div className="p-4 rounded-full bg-emerald-100/80 dark:bg-emerald-900/20 mb-6">
+                    <HardDrive className="h-12 w-12 text-emerald-500 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">No files found</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Upload files to get started</p>
+                </>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   ), [searchQuery, selectedView, handleUploadFile]);
 
   // Memoized file cards to prevent unnecessary re-renders
@@ -739,12 +777,37 @@ const FileManager = () => {
         </div>
         
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden p-4">
+        <div className="flex-1 flex flex-col overflow-hidden p-6 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold mb-2">File Manager</h1>
-            <p className="text-muted-foreground mb-4">
-              Organize and manage your files
-            </p>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-3xl font-bold mb-1 text-gray-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400">
+                  File Manager
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Organize and manage your files
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Button 
+                  onClick={() => setCreateFolderOpen(true)}
+                  size="sm"
+                  className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750 shadow-sm"
+                >
+                  <Folder className="h-4 w-4 mr-2" />
+                  New Folder
+                </Button>
+                <Button 
+                  onClick={handleUploadFile}
+                  size="sm"
+                  className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Files
+                </Button>
+              </div>
+            </div>
             
             {/* Mobile nav (show categories & views) */}
             <div className="block md:hidden mb-4">
@@ -753,78 +816,190 @@ const FileManager = () => {
             
             {/* Breadcrumbs (only show in "all files" view) */}
             {selectedView === 'all' && (
-              <FileBreadcrumb
-                folders={breadcrumbs}
-                onNavigate={handleBreadcrumbClick}
-              />
+              <div className="mb-4">
+                <FileBreadcrumb
+                  folders={breadcrumbs}
+                  onNavigate={handleBreadcrumbClick}
+                />
+              </div>
             )}
             
+            {/* Storage Stats */}
+            <div className="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Storage Overview</h2>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">You've used 65% of your storage</p>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="px-3 py-1 bg-gray-100/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300">
+                    <span className="font-semibold">65.4 GB</span> <span className="text-gray-500 dark:text-gray-400">used of 100 GB</span>
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-600 to-violet-600 rounded-full"
+                    style={{ width: '65%' }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Documents</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">25.5 GB</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                    <ImageIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Images</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">15.2 GB</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                    <FileVideo className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Videos</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">22.8 GB</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <File className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Others</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">1.9 GB</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             {/* File Toolbar */}
-            <FileToolbar
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              onSortChange={setSortBy}
-              onSortDirectionToggle={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-              searchQuery={searchQuery}
-              onSearchChange={(query) => {
-                setSearchQuery(query);
-                if (!query) {
-                  loadData();
-                }
-              }}
-              selectedCount={selectedFiles.size}
-              onCreateFolder={() => setCreateFolderOpen(true)}
-              onUploadFile={handleUploadFile}
-              onBulkArchive={handleBulkArchive}
-              onBulkStar={handleBulkStar}
-              onBulkDelete={handleBulkDelete}
-            />
+            <div className="mb-4">
+              <FileToolbar
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSortChange={setSortBy}
+                onSortDirectionToggle={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+                searchQuery={searchQuery}
+                onSearchChange={(query) => {
+                  setSearchQuery(query);
+                  if (!query) {
+                    loadData();
+                  }
+                }}
+                selectedCount={selectedFiles.size}
+                onCreateFolder={() => setCreateFolderOpen(true)}
+                onUploadFile={handleUploadFile}
+                onBulkArchive={handleBulkArchive}
+                onBulkStar={handleBulkStar}
+                onBulkDelete={handleBulkDelete}
+              />
+            </div>
+            
+            {/* View Mode Toggle */}
+            <div className="flex justify-end mb-4">
+              <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={cn(
+                    "rounded-none h-9 w-9",
+                    viewMode === "grid" && "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
+                  )}
+                  onClick={() => setViewMode("grid")}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={cn(
+                    "rounded-none h-9 w-9",
+                    viewMode === "list" && "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
+                  )}
+                  onClick={() => setViewMode("list")}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
           
           <ScrollArea className="flex-1 overflow-x-hidden pr-4">
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-violet-600/20 rounded-full blur-xl animate-pulse"></div>
+                  <Loader2 className="h-10 w-10 animate-spin text-indigo-600 dark:text-indigo-400 relative z-10" />
+                </div>
               </div>
             ) : files.length === 0 ? (
               renderEmptyState
             ) : (
-              <>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {fileCards}
-                  </div>
-                ) : (
-                  <FileList
-                    files={files}
-                    selectedFiles={selectedFiles}
-                    onSelect={handleSelectFile}
-                    onSelectAll={handleSelectAll}
-                    onFileClick={handleFileClick}
-                    onShare={(file) => {
-                      setSelectedFileForShare(file);
-                      setShareDialogOpen(true);
-                    }}
-                    onRename={(file) => {
-                      setSelectedFileForRename(file);
-                      setRenameDialogOpen(true);
-                    }}
-                    onToggleStar={handleToggleStar}
-                    onMove={(file) => {
-                      setSelectedFileForMove(file);
-                      setMoveDialogOpen(true);
-                      loadAllFolders(null);
-                    }}
-                    onArchive={handleArchive}
-                    onDelete={(file) => {
-                      setSelectedFileForDelete(file);
-                      setDeleteConfirmOpen(true);
-                    }}
-                  />
-                )}
-              </>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={viewMode}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      {fileCards}
+                    </div>
+                  ) : (
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                      <FileList
+                        files={files}
+                        selectedFiles={selectedFiles}
+                        onSelect={handleSelectFile}
+                        onSelectAll={handleSelectAll}
+                        onFileClick={handleFileClick}
+                        onShare={(file) => {
+                          setSelectedFileForShare(file);
+                          setShareDialogOpen(true);
+                        }}
+                        onRename={(file) => {
+                          setSelectedFileForRename(file);
+                          setRenameDialogOpen(true);
+                        }}
+                        onToggleStar={handleToggleStar}
+                        onMove={(file) => {
+                          setSelectedFileForMove(file);
+                          setMoveDialogOpen(true);
+                          loadAllFolders(null);
+                        }}
+                        onArchive={handleArchive}
+                        onDelete={(file) => {
+                          setSelectedFileForDelete(file);
+                          setDeleteConfirmOpen(true);
+                        }}
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             )}
           </ScrollArea>
         </div>
@@ -891,13 +1066,16 @@ const FileManager = () => {
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete{' '}
               {selectedFileForDelete?.is_folder
-                ? `the folder "${selectedFileForDelete.name}" and all its contents.`
-                : `the file "${selectedFileForDelete?.name}".`}
+                ? <span className="font-medium text-gray-900 dark:text-gray-100">the folder "{selectedFileForDelete.name}" and all its contents.</span>
+                : <span className="font-medium text-gray-900 dark:text-gray-100">the file "{selectedFileForDelete?.name}".</span>}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteFile} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogCancel className="border-gray-200 dark:border-gray-700">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteFile} 
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

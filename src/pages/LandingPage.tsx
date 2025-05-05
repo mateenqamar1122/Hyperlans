@@ -347,11 +347,23 @@ const LandingPage = () => {
           <div className="mx-auto max-w-5xl">
             <div className="mt-12 grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
               {/* Integration Logos */}
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="flex items-center justify-center p-4 grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100">
-                  <div className="h-12 w-24 rounded-md bg-muted/50 flex items-center justify-center">
-                    <div className="text-2xl font-bold text-muted-foreground">Logo {i}</div>
-                  </div>
+              {[
+                { name: 'Google', logo: '/companies_logo/google.svg' },
+                { name: 'Slack', logo: '/companies_logo/slack.svg' },
+                { name: 'Teams', logo: '/companies_logo/microsoftteam.svg' },
+                { name: 'Notion', logo: '/companies_logo/notion.svg' },
+                { name: 'Asana', logo: '/companies_logo/asana.svg' },
+                { name: 'Zoom', logo: '/companies_logo/zoom.svg' }
+              ].map((integration) => (
+                <div 
+                  key={integration.name} 
+                  className="flex items-center justify-center p-4 grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100"
+                >
+                  <img 
+                    src={integration.logo} 
+                    alt={`${integration.name} logo`} 
+                    className="h-12 object-contain"
+                  />
                 </div>
               ))}
             </div>
