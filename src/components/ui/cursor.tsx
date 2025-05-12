@@ -1,32 +1,16 @@
 "use client";
 
-import { motion, useSpring } from 'framer-motion';
-import { FC, JSX, useEffect, useRef, useState } from "react";
-
-interface Position {
-  x: number;
-  y: number;
-}
-
-export interface SmoothCursorProps {
-  cursor?: JSX.Element;
-  springConfig?: {
-    damping: number;
-    stiffness: number;
-    mass: number;
-    restDelta: number;
-  };
-}
+import { motion } from 'framer-motion';
+import { FC, useEffect, useState } from "react";
 
 const DefaultCursorSVG: FC = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={50}
-      height={54}
+      width={35}
+      height={37}
       viewBox="0 0 50 54"
       fill="none"
-      style={{ scale: 0.5 }}
     >
       <g filter="url(#filter0_d_91_7928)">
         <path
@@ -42,7 +26,7 @@ const DefaultCursorSVG: FC = () => {
       <defs>
         <filter
           id="filter0_d_91_7928"
-          x={0.602397}
+          x={1.602397}
           y={0.952444}
           width={49.0584}
           height={52.428}
@@ -81,132 +65,21 @@ const DefaultCursorSVG: FC = () => {
 };
 
 const Cursor = () => {
-  const [isMoving, setIsMoving] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const lastMousePos = useRef<Position>({ x: 0, y: 0 });
-  const velocity = useRef<Position>({ x: 0, y: 0 });
-  const lastUpdateTime = useRef(Date.now());
-  const previousAngle = useRef(0);
-  const accumulatedRotation = useRef(0);
-  const scrollTimeout = useRef<NodeJS.Timeout>();
-  const moveTimeout = useRef<NodeJS.Timeout>();
-
-  const springConfig = {
-    damping: 45,
-    stiffness: 400,
-    mass: 1,
-    restDelta: 0.001,
-  };
-
-  const cursorX = useSpring(0, springConfig);
-  const cursorY = useSpring(0, springConfig);
-  const rotation = useSpring(0, {
-    ...springConfig,
-    damping: 60,
-    stiffness: 300,
-  });
-  const scale = useSpring(1, {
-    ...springConfig,
-    stiffness: 500,
-    damping: 35,
-  });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolling(true);
-      scale.set(0.8);
-      
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current);
-      }
-      
-      scrollTimeout.current = setTimeout(() => {
-        setIsScrolling(false);
-        scale.set(1);
-      }, 100);
-    };
-
-    const updateVelocity = (currentPos: Position) => {
-      const currentTime = Date.now();
-      const deltaTime = currentTime - lastUpdateTime.current;
-
-      if (deltaTime > 0) {
-        velocity.current = {
-          x: (currentPos.x - lastMousePos.current.x) / deltaTime,
-          y: (currentPos.y - lastMousePos.current.y) / deltaTime,
-        };
-      }
-
-      lastUpdateTime.current = currentTime;
-      lastMousePos.current = currentPos;
-    };
-
-    const smoothMouseMove = (e: MouseEvent) => {
-      const currentPos = { x: e.clientX, y: e.clientY };
-      updateVelocity(currentPos);
-
-      const speed = Math.sqrt(
-        Math.pow(velocity.current.x, 2) + Math.pow(velocity.current.y, 2),
-      );
-
-      cursorX.set(currentPos.x);
-      cursorY.set(currentPos.y);
-
-      if (speed > 0.1 && !isScrolling) {
-        const currentAngle =
-          Math.atan2(velocity.current.y, velocity.current.x) * (180 / Math.PI) +
-          90;
-
-        let angleDiff = currentAngle - previousAngle.current;
-        if (angleDiff > 180) angleDiff -= 360;
-        if (angleDiff < -180) angleDiff += 360;
-        accumulatedRotation.current += angleDiff;
-        rotation.set(accumulatedRotation.current);
-        previousAngle.current = currentAngle;
-
-        if (!isMoving) {
-          scale.set(0.9);
-          setIsMoving(true);
-        }
-
-        if (moveTimeout.current) {
-          clearTimeout(moveTimeout.current);
-        }
-
-        moveTimeout.current = setTimeout(() => {
-          if (!isScrolling) {
-            scale.set(1);
-            setIsMoving(false);
-          }
-        }, 100);
-
-        return () => clearTimeout(timeout);
-      }
-    };
-
-    let rafId: number;
-    const throttledMouseMove = (e: MouseEvent) => {
-      if (rafId) return;
-
-      rafId = requestAnimationFrame(() => {
-        smoothMouseMove(e);
-        rafId = 0;
-      });
+    const handleMouseMove = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY });
     };
 
     document.body.style.cursor = "none";
-    window.addEventListener("mousemove", throttledMouseMove);
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", throttledMouseMove);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
       document.body.style.cursor = "auto";
-      if (rafId) cancelAnimationFrame(rafId);
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-      if (moveTimeout.current) clearTimeout(moveTimeout.current);
     };
-  }, [cursorX, cursorY, rotation, scale, isScrolling]);
+  }, []);
 
   if (typeof window === 'undefined') return null;
 
@@ -222,22 +95,11 @@ const Cursor = () => {
       <motion.div
         style={{
           position: "fixed",
-          left: cursorX,
-          top: cursorY,
-          translateX: "-50%",
-          translateY: "-50%",
-          rotate: rotation,
-          scale: scale,
+          left: position.x,
+          top: position.y,
+          transform: "translate(-50%, -50%)",
           zIndex: 9999,
           pointerEvents: "none",
-          willChange: "transform",
-        }}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{
-          type: "spring",
-          stiffness: 400,
-          damping: 30,
         }}
       >
         <DefaultCursorSVG />
@@ -245,5 +107,6 @@ const Cursor = () => {
     </>
   );
 };
+
 
 export default Cursor;

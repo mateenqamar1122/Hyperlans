@@ -1,5 +1,6 @@
 
 import { Calendar, Code, FileText, User, Clock } from "lucide-react";
+import { DashboardIcon, FolderManagementIcon, ProductivityIcon, TaskManagerIcon, SettingsIcon, AIAssistantIcon, AIContentGenerationIcon,BriefcaseIcon, ClientIcon, ProjectIcon, TeamIcon, AnalyticsIcon,DebitCardIcon, ExpenseIcon, } from '@/components/icons/custom-icons';
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
 
 const featureData = [
@@ -7,7 +8,7 @@ const featureData = [
     id: 1,
     title: "Client Management",
     description: "Organize client information, track communication history, and build stronger relationships with your clients. Keep all your client data in one place.",
-    icon: User,
+    icon: TeamIcon,
     relatedIds: [2, 4],
     status: "available" as const,
     energy: 95,
@@ -16,7 +17,7 @@ const featureData = [
     id: 2,
     title: "Project Tracking",
     description: "Stay on top of deadlines, milestones, and deliverables for every project. Manage tasks and track progress with visual indicators.",
-    icon: FileText,
+    icon: ProjectIcon,
     relatedIds: [1, 3, 5],
     status: "available" as const,
     energy: 90,
@@ -25,7 +26,7 @@ const featureData = [
     id: 3,
     title: "Invoicing & Payments",
     description: "Create professional invoices and get paid faster with multiple payment options. Automatic reminders and payment tracking.",
-    icon: Calendar,
+    icon: DebitCardIcon,
     relatedIds: [2, 4],
     status: "available" as const,
     energy: 85,
@@ -34,7 +35,7 @@ const featureData = [
     id: 4,
     title: "Expense Tracking",
     description: "Track business expenses, categorize spending, and generate reports for tax time. Connect to your bank accounts for automatic imports.",
-    icon: Clock,
+    icon: ExpenseIcon,
     relatedIds: [3, 5],
     status: "available" as const,
     energy: 80,
@@ -43,7 +44,7 @@ const featureData = [
     id: 5,
     title: "Portfolio Generator",
     description: "Create stunning portfolios to showcase your work to potential clients. Customizable templates with your branding.",
-    icon: Code,
+    icon: BriefcaseIcon,
     relatedIds: [2, 6],
     status: "available" as const,
     energy: 75,
@@ -52,7 +53,7 @@ const featureData = [
     id: 6,
     title: "AI Assistant",
     description: "Intelligent AI assistant to help with content creation, business advice, and automating repetitive tasks.",
-    icon: User,
+    icon: AIAssistantIcon,
     relatedIds: [5, 7],
     status: "premium" as const,
     energy: 70,
@@ -61,7 +62,7 @@ const featureData = [
     id: 7,
     title: "Team Collaboration",
     description: "Invite team members, assign tasks, and collaborate effectively. Real-time updates and communication tools.",
-    icon: User,
+    icon: ClientIcon,
     relatedIds: [6, 8],
     status: "available" as const,
     energy: 65,

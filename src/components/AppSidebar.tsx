@@ -26,6 +26,7 @@ import {
   WalletCards
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DashboardIcon, FolderManagementIcon, ProductivityIcon, TaskManagerIcon, SettingsIcon, AIAssistantIcon, AIContentGenerationIcon,BriefcaseIcon, ClientIcon, ProjectIcon, TeamIcon, AnalyticsIcon,DebitCardIcon, ExpenseIcon, } from '@/components/icons/custom-icons';
 
 interface AppSidebarProps {
   isOpen: boolean;
@@ -119,32 +120,35 @@ const AppSidebar = ({ isOpen, setIsOpen }: AppSidebarProps) => {
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
+
+
   
+  // Update the mainMenuItems array
   const mainMenuItems = [
     {
       title: "Dashboard",
       path: "/dashboard",
-      icon: LayoutDashboard,
+      icon: DashboardIcon, // Replace LayoutDashboard with DashboardIcon
     },
     {
       title: "Analytics",
       path: "/analytics",
-      icon: BarChart2,
+      icon: AnalyticsIcon,
     },
     {
       title: "Payments",
       path: "/payments",
-      icon: CreditCard,
+      icon: DebitCardIcon,
     },
     {
       title: "Expenses", // New expenses menu item
       path: "/expenses",
-      icon: WalletCards,
+      icon: ExpenseIcon,
     },
     {
       title: "Portfolio",
       path: "/portfolio",
-      icon: Briefcase,
+      icon: BriefcaseIcon,
     },
   ];
   
@@ -152,35 +156,34 @@ const AppSidebar = ({ isOpen, setIsOpen }: AppSidebarProps) => {
     {
       title: "AI Assistant",
       path: "/ai-assistant",
-      icon: Brain,
+      icon: AIAssistantIcon,
       premium: true,
     },
     {
       title: "Content Generator",
       path: "/content-generator",
-      icon: Wand2,
+      icon: AIContentGenerationIcon,
       premium: true,
     },
     {
       title: "File Manager",
       path: "/file-manager",
-      icon: FolderTree,
+      icon: FolderManagementIcon,
     },
     {
       title: "Productivity",
       path: "/productivity",
-      icon: Zap,
+      icon: ProductivityIcon,
     },
     {
       title: "Task Manager",
       path: "/task-manager",
-      icon: ListTodo,
+      icon: TaskManagerIcon,
     },
     {
-      title: "Code Snippets",
-      path: "/code-snippets",
-      icon: SquareCode,
-      premium: true,
+      title: "Automation",
+      icon: Zap,
+      path: "/automation",
     },
   ];
   
@@ -188,22 +191,22 @@ const AppSidebar = ({ isOpen, setIsOpen }: AppSidebarProps) => {
     {
       title: "Clients",
       path: "/clients",
-      icon: Users,
+      icon: ClientIcon,
     },
     {
       title: "Projects",
       path: "/projects",
-      icon: Folder,
+      icon: ProjectIcon,
     },
     {
       title: "Teams",
       path: "/team",
-      icon: Users,
+      icon: TeamIcon,
     },
     {
       title: "Settings",
       path: "/settings",
-      icon: Settings,
+      icon: SettingsIcon,
     },
   ];
 

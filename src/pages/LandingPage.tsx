@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/ui/footer-section";
 import { FeatureOrbital } from "@/components/features/FeatureOrbital";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 
 import { useEffect, useRef } from 'react';
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 
 const LandingPage = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -465,8 +467,28 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Typewriter Effect Section */}
+      <section className="w-full py-12 md:py-24 bg-background border-t border-border/30">
+        <div className="container px-4 md:px-6">
+          <TypewriterEffectSmooth
+            words={[
+              { text: "Transform", className: "text-primary" },
+              { text: "your", className: "text-muted-foreground" },
+              { text: "freelance", className: "text-muted-foreground" },
+              { text: "business", className: "text-brand-blue" },
+              { text: "today.", className: "text-primary" },
+            ]}
+            className="justify-center"
+            cursorClassName="bg-primary"
+          />
+          <InteractiveHoverButton>Get Started</InteractiveHoverButton>
+
+        </div>
+        
+      </section>
+
       {/* Final CTA Section */}
-      <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-br from-primary/90 via-primary to-brand-blue/90">
+      {/* <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-br from-primary/90 via-primary to-brand-blue/90">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-8 text-center">
             <div className="space-y-4 max-w-[800px]">
@@ -490,7 +512,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

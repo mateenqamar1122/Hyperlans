@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import ProjectNotesTab from "./project/ProjectNotesTab";
 import { ClientAccessCard } from "./project/ClientAccessCard";
+import { ProjectClientDetail } from "./project/ProjectClientDetail";
 import ImageUpload from "./ImageUpload";
 import { updateProject } from "@/services/projectService";
 import { toast } from "sonner";
@@ -128,9 +129,9 @@ export default function ProjectDetail({ project, onEdit, onBack, onDeleted }: Pr
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               <div>
-                <div className="text-sm font-medium">Client</div>
+                <div className="text-sm font-medium">Category</div>
                 <div className="text-muted-foreground">
-                  {project.client?.name || "No client assigned"}
+                  {project.category || "No category set"}
                 </div>
               </div>
               <div>
@@ -197,6 +198,8 @@ export default function ProjectDetail({ project, onEdit, onBack, onDeleted }: Pr
             </CardContent>
           </Card>
 
+          <ProjectClientDetail project={project} />
+
           <Card>
             <CardHeader>
               <CardTitle>Manager Notes</CardTitle>
@@ -234,7 +237,7 @@ export default function ProjectDetail({ project, onEdit, onBack, onDeleted }: Pr
         </TabsContent>
 
         <TabsContent value="clients" className="space-y-4">
-          <ClientAccessCard projectId={project.id} />
+          <ClientAccessCard projectId={project.id} project={project} />
         </TabsContent>
       </Tabs>
     </div>

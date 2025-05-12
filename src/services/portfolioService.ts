@@ -1,334 +1,173 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
-import { ExtendedPortfolioData, Skill, PortfolioProject, PortfolioExperience } from "@/types/portfolio";
+import { Portfolio, ExtendedPortfolioData } from "@/types/portfolio";
+import { getPortfolioSkills } from "./portfolioSkillsService";
+import { getPortfolioProjects } from "./portfolioProjectsService";
+import { getPortfolioExperiences } from "./portfolioExperiencesService";
+import { getPortfolioServices } from "./portfolioServicesService";
 
-export const uploadPortfolioImage = async (file: File): Promise<string | null> => {
-  try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `portfolio_images/${fileName}`;
-
-    const { data, error } = await supabase.storage
-      .from('portfolio')
-      .upload(filePath, file);
-
-    if (error) throw error;
-
-    const { data: urlData } = supabase.storage
-      .from('portfolio')
-      .getPublicUrl(filePath);
-
-    return urlData.publicUrl;
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    toast.error("Failed to upload image");
-    return null;
+// Default portfolio data
+const defaultPortfolio: Omit<Portfolio, 'id' | 'user_id'> = {
+  name: "Professional Portfolio",
+  title: "Professional Developer",
+  subtitle: "Building digital solutions for modern businesses",
+  bio: "I am a skilled professional with expertise in development, design, and problem-solving. With years of experience in the industry, I help businesses transform their ideas into reality.",
+  theme: "modern",
+  layout: "professional",
+  contact: {
+    email: "",
+    phone: "",
+    website: "",
+    linkedin: "",
+    twitter: "",
+    github: ""
   }
 };
 
-// Save portfolio data to Supabase
-export const savePortfolioData = async (portfolio: ExtendedPortfolioData): Promise<string | null> => {
+export const getPortfolio = async (): Promise<Portfolio | null> => {
   try {
-    const user = (await supabase.auth.getUser()).data.user;
-    if (!user) {
-      toast.error("You must be logged in to save a portfolio");
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return null;
+
+    const { data, error } = await supabase
+      .from("portfolios")
+      .select("*")
+      .eq("user_id", userData.user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error fetching portfolio:", error);
       return null;
     }
 
-    // First save the main portfolio data
-    const { data: portfolioData, error: portfolioError } = await supabase
-      .from('portfolios')
-      .upsert({
-        id: portfolio.id || undefined,
-        user_id: user.id,
-        name: portfolio.name,
-        title: portfolio.title,
-        subtitle: portfolio.subtitle || '',
-        bio: portfolio.bio,
-        theme: portfolio.theme || 'default',
-        layout: portfolio.layout || 'standard',
-        logo_url: portfolio.logoImage || null,
-        banner_url: portfolio.bannerImage || null,
-        contact: portfolio.contact || {},
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (portfolioError) throw portfolioError;
-    
-    const portfolioId = portfolioData.id;
-    
-    // Save portfolio skills
-    if (portfolio.skills && portfolio.skills.length > 0) {
-      // Get current skills to determine which ones to delete
-      const { data: existingSkills } = await supabase
-        .from('portfolio_skills')
-        .select('id')
-        .eq('portfolio_id', portfolioId);
-      
-      const existingIds = existingSkills?.map((s: any) => s.id) || [];
-      const newSkillIds = portfolio.skills.map(s => s.id).filter(id => id);
-      const skillsToDelete = existingIds.filter(id => !newSkillIds.includes(id));
-      
-      // Delete removed skills
-      if (skillsToDelete.length > 0) {
-        await supabase
-          .from('portfolio_skills')
-          .delete()
-          .in('id', skillsToDelete);
-      }
-      
-      // Upsert (update or insert) skills
-      for (const skill of portfolio.skills) {
-        await supabase
-          .from('portfolio_skills')
-          .upsert({
-            id: skill.id || undefined,
-            portfolio_id: portfolioId,
-            name: skill.name,
-            level: skill.level,
-            category: skill.category
-          });
-      }
-    }
-    
-    // Save portfolio projects
-    if (portfolio.projects && portfolio.projects.length > 0) {
-      // For projects, we don't delete existing ones, just update the portfolio_id reference
-      for (const project of portfolio.projects) {
-        await supabase
-          .from('portfolio_projects')
-          .upsert({
-            id: project.id,
-            portfolio_id: portfolioId,
-            title: project.title,
-            description: project.description,
-            image_url: project.image,
-            url: project.link,
-            technologies: project.technologies,
-            is_featured: project.featured
-          });
-      }
-    }
-    
-    // Save portfolio experiences
-    if (portfolio.experiences && portfolio.experiences.length > 0) {
-      // Get current experiences to determine which ones to delete
-      const { data: existingExperiences } = await supabase
-        .from('portfolio_experiences')
-        .select('id')
-        .eq('portfolio_id', portfolioId);
-      
-      const existingIds = existingExperiences?.map((e: any) => e.id) || [];
-      const newExpIds = portfolio.experiences.map(e => e.id).filter(id => id);
-      const experiencesToDelete = existingIds.filter(id => !newExpIds.includes(id));
-      
-      // Delete removed experiences
-      if (experiencesToDelete.length > 0) {
-        await supabase
-          .from('portfolio_experiences')
-          .delete()
-          .in('id', experiencesToDelete);
-      }
-      
-      // Upsert experiences
-      for (const exp of portfolio.experiences) {
-        await supabase
-          .from('portfolio_experiences')
-          .upsert({
-            id: exp.id || undefined,
-            portfolio_id: portfolioId,
-            title: exp.role,
-            company: exp.company,
-            location: exp.location,
-            start_date: exp.startDate,
-            end_date: exp.endDate,
-            current: exp.isCurrent,
-            description: exp.description
-          });
-      }
+    // If no portfolio exists, create one with default data
+    if (!data) {
+      return createPortfolio();
     }
 
-    toast.success("Portfolio saved successfully");
-    return portfolioId;
+    return data;
   } catch (error) {
-    console.error("Error saving portfolio:", error);
-    toast.error("Failed to save portfolio");
+    console.error("Error in getPortfolio:", error);
     return null;
   }
 };
 
-// Get a portfolio by ID
-export const getPortfolioById = async (portfolioId: string): Promise<ExtendedPortfolioData | null> => {
+export const createPortfolio = async (): Promise<Portfolio | null> => {
   try {
-    // Get the main portfolio data
-    const { data: portfolioData, error: portfolioError } = await supabase
-      .from('portfolios')
-      .select('*')
-      .eq('id', portfolioId)
-      .single();
-    
-    if (portfolioError) throw portfolioError;
-    
-    // Get skills
-    const { data: skillsData } = await supabase
-      .from('portfolio_skills')
-      .select('*')
-      .eq('portfolio_id', portfolioId);
-    
-    // Get projects
-    const { data: projectsData } = await supabase
-      .from('portfolio_projects')
-      .select('*')
-      .eq('portfolio_id', portfolioId);
-    
-    // Get experiences
-    const { data: experiencesData } = await supabase
-      .from('portfolio_experiences')
-      .select('*')
-      .eq('portfolio_id', portfolioId);
-    
-    // Map the data to the portfolio structure
-    const portfolio: ExtendedPortfolioData = {
-      id: portfolioData.id,
-      user_id: portfolioData.user_id,
-      name: portfolioData.name,
-      title: portfolioData.title,
-      subtitle: portfolioData.subtitle,
-      bio: portfolioData.bio,
-      theme: portfolioData.theme,
-      layout: portfolioData.layout,
-      logoImage: portfolioData.logo_url,
-      bannerImage: portfolioData.banner_url,
-      contact: portfolioData.contact,
-      skills: skillsData?.map((s: any) => ({
-        id: s.id,
-        name: s.name,
-        level: s.level,
-        category: s.category
-      })) || [],
-      projects: projectsData?.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        description: p.description,
-        image: p.image_url,
-        link: p.url,
-        technologies: p.technologies,
-        featured: p.is_featured
-      })) || [],
-      experiences: experiencesData?.map((e: any) => ({
-        id: e.id,
-        role: e.title,
-        company: e.company,
-        location: e.location,
-        startDate: e.start_date,
-        endDate: e.end_date,
-        isCurrent: e.current,
-        description: e.description
-      })) || []
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return null;
+
+    const newPortfolio = {
+      ...defaultPortfolio,
+      user_id: userData.user.id
     };
-    
-    return portfolio;
+
+    const { data, error } = await supabase
+      .from("portfolios")
+      .insert(newPortfolio)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error("Error creating portfolio:", error);
+      return null;
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error fetching portfolio:", error);
-    toast.error("Failed to load portfolio");
+    console.error("Error in createPortfolio:", error);
     return null;
   }
 };
 
-// Get all portfolios for the current user
-export const getUserPortfolios = async (): Promise<ExtendedPortfolioData[]> => {
+export const updatePortfolio = async (portfolio: Partial<Portfolio>): Promise<Portfolio | null> => {
   try {
-    const { data: userPortfolios, error } = await supabase
-      .from('portfolios')
+    if (!portfolio.id) {
+      console.error("Portfolio ID is required for update");
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from("portfolios")
+      .update(portfolio)
+      .eq("id", portfolio.id)
       .select('*')
-      .order('updated_at', { ascending: false });
-    
-    if (error) throw error;
-    
-    return userPortfolios.map((p: any) => ({
-      id: p.id,
-      user_id: p.user_id,
-      name: p.name,
-      title: p.title,
-      subtitle: p.subtitle,
-      bio: p.bio,
-      theme: p.theme,
-      layout: p.layout,
-      logoImage: p.logo_url,
-      bannerImage: p.banner_url,
-      contact: p.contact,
-      skills: [],
-      projects: [],
-      experiences: []
-    }));
+      .single();
+
+    if (error) {
+      console.error("Error updating portfolio:", error);
+      return null;
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error fetching user portfolios:", error);
-    toast.error("Failed to load portfolios");
-    return [];
+    console.error("Error in updatePortfolio:", error);
+    return null;
   }
 };
 
-// Delete a portfolio
-export const deletePortfolio = async (portfolioId: string): Promise<boolean> => {
+export const publishPortfolio = async (portfolioId: string): Promise<boolean> => {
   try {
+    // Generate a unique slug for the published URL
+    const publishedUrl = `portfolio-${Date.now().toString(36)}`;
+    
     const { error } = await supabase
-      .from('portfolios')
-      .delete()
-      .eq('id', portfolioId);
-    
-    if (error) throw error;
-    
-    toast.success("Portfolio deleted successfully");
+      .from("portfolios")
+      .update({ 
+        is_published: true,
+        published_url: publishedUrl
+      })
+      .eq("id", portfolioId);
+
+    if (error) {
+      console.error("Error publishing portfolio:", error);
+      return false;
+    }
+
     return true;
   } catch (error) {
-    console.error("Error deleting portfolio:", error);
-    toast.error("Failed to delete portfolio");
+    console.error("Error in publishPortfolio:", error);
     return false;
   }
 };
 
-// Export portfolio as PDF or HTML
-export const exportPortfolioToPDF = async (portfolioId?: string): Promise<void> => {
+export const getExtendedPortfolioData = async (): Promise<ExtendedPortfolioData | null> => {
   try {
-    let portfolio: ExtendedPortfolioData | null = null;
-    
-    if (portfolioId) {
-      // If portfolioId is provided, fetch the portfolio data
-      portfolio = await getPortfolioById(portfolioId);
-    } else {
-      // Otherwise, try to get the current user's first portfolio
-      const portfolios = await getUserPortfolios();
-      if (portfolios.length > 0) {
-        portfolio = await getPortfolioById(portfolios[0].id);
-      }
-    }
-    
-    if (!portfolio) {
-      toast.error("No portfolio found to export");
-      return;
-    }
-    
-    // Import the exportPortfolio function from pdfExportService
-    const { exportPortfolio } = await import('./pdfExportService');
-    
-    // Export the portfolio to PDF
-    await exportPortfolio(portfolio, {
-      filename: `${portfolio.name.replace(/\s+/g, '_')}_portfolio.pdf`,
-      watermark: 'Created with ProFlo'
-    });
-    
-  } catch (error) {
-    console.error("Error exporting portfolio to PDF:", error);
-    toast.error("Failed to export portfolio to PDF");
-  }
-};
+    const { data: portfolioData, error: portfolioError } = await supabase
+      .from("portfolios")
+      .select("*")
+      .single();
 
-// Share portfolio via link
-export const sharePortfolio = async (portfolioName?: string): Promise<void> => {
-  // Generate a shareable link
-  toast.info("Sharing functionality coming soon");
+    if (portfolioError) {
+      if (portfolioError.code !== "PGRST116") { // Not found error
+        console.error("Error fetching portfolio:", portfolioError);
+      }
+      return null;
+    }
+
+    if (!portfolioData) {
+      return null;
+    }
+
+    const portfolio = portfolioData as Portfolio;
+    const skills = await getPortfolioSkills(portfolio.id);
+    const projects = await getPortfolioProjects(portfolio.id);
+    const experiences = await getPortfolioExperiences(portfolio.id);
+    const services = await getPortfolioServices(portfolio.id);
+
+    const extendedPortfolio: ExtendedPortfolioData = {
+      ...portfolio,
+      projects,
+      skills,
+      experiences,
+      services,
+      logoImage: portfolio.logo_url || "",
+      bannerImage: portfolio.banner_url || ""
+    };
+
+    return extendedPortfolio;
+  } catch (error) {
+    console.error("Error fetching extended portfolio data:", error);
+    return null;
+  }
 };

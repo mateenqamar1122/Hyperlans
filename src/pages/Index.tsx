@@ -50,7 +50,7 @@ const testimonials = [
 
 const Index = () => {
   return (
-    <LandingLayout>
+    // <LandingLayout>
       <div className="min-h-screen">
         {/* Hero Section */}
         <section className="relative w-full py-12 md:py-20 lg:py-28 xl:py-32 overflow-hidden">
@@ -147,7 +147,7 @@ const Index = () => {
           className="w-full py-16 md:py-24 bg-gradient-to-br from-primary/90 via-primary to-brand-blue/90"
         />
       </div>
-    </LandingLayout>
+    // </LandingLayout>
   );
 };
 

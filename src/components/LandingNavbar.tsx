@@ -43,7 +43,7 @@ const LandingNavbar = () => {
   />
 </div>
 
-            <span className="font-bold text-lg premium-text-gradient">HyperLans</span>
+            <span className="font-bold text-lg premium-text-gradient">Spikelance</span>
           </Link>
         </div>
         

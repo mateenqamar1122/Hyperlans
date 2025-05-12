@@ -49,7 +49,11 @@ export const getProjectById = async (id: string): Promise<Project | null> => {
     
     return {
       ...data,
-      team: teamMembers
+      team: teamMembers,
+      client: {
+        ...data.clients,
+        status: ["active", "inactive", "lead"].includes(data.clients?.status) ? data.clients.status : "active"
+      } // Map 'clients' to 'client' for compatibility and ensure status type
     };
   } catch (error) {
     console.error('Error fetching project:', error);
@@ -259,4 +263,4 @@ export const deleteTeamMember = async (id: string): Promise<boolean> => {
     toast.error('Failed to delete team member');
     return false;
   }
-};   
+};

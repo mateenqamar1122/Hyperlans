@@ -17,7 +17,8 @@ import {
   Layers,
   BarChart3,
   Grid3x3,
-  LineChart
+  LineChart,
+  CheckCircle
 } from "lucide-react";
 import { 
   Card, 
@@ -421,6 +422,70 @@ const Projects = () => {
 
   return (
     <div className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-brand-cyan/10 to-brand-blue/10 hover:from-brand-cyan/20 hover:to-brand-blue/20 transition-all duration-300 border-none shadow-lg">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>Total Projects</span>
+              <LayoutGrid className="h-5 w-5 text-brand-cyan" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{projects.length}</div>
+            <p className="text-sm text-muted-foreground mt-1">Across all statuses</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-brand-blue/10 to-brand-magenta/10 hover:from-brand-blue/20 hover:to-brand-magenta/20 transition-all duration-300 border-none shadow-lg">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>In Progress</span>
+              <Clock className="h-5 w-5 text-brand-blue" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {projects.filter(p => p.status === 'in-progress').length}
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">Active projects</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-brand-magenta/10 to-purple-500/10 hover:from-brand-magenta/20 hover:to-purple-500/20 transition-all duration-300 border-none shadow-lg">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>Completed</span>
+              <CheckCircle className="h-5 w-5 text-brand-magenta" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {projects.filter(p => p.status === 'completed').length}
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">Successfully delivered</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500/10 to-brand-cyan/10 hover:from-purple-500/20 hover:to-brand-cyan/20 transition-all duration-300 border-none shadow-lg">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>Success Rate</span>
+              <BarChart3 className="h-5 w-5 text-purple-500" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {projects.length > 0 ? Math.round((projects.filter(p => p.status === 'completed').length / projects.length) * 100) : 0}%
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">Project completion rate</p>
+          </CardContent>
+        </Card>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

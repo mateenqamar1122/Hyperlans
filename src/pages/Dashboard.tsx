@@ -311,7 +311,7 @@ const Dashboard = () => {
           <div>
             <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-cyan mb-2">Dashboard</h1>
             <p className="text-muted-foreground text-lg">
-              Welcome to your dashboard. Here's a quick overview of your business.
+              {user?.user_metadata?.name ? `Hello, ${user.user_metadata.name}! 😊` : 'Welcome to your dashboard.'} Here's a quick overview of your business.
             </p>
           </div>
           <DropdownMenu>

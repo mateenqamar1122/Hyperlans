@@ -117,3 +117,31 @@ export const deleteClient = async (id: string): Promise<boolean> => {
     return false;
   }
 };
+
+/**
+ * Send an invitation to a client for a project
+ */
+export const inviteClient = async (projectId: string, email: string, password: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`/api/projects/${projectId}/invite`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        email,
+        password, // Include the generated password
+        projectId
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send invitation");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error inviting client:", error);
+    throw error;
+  }
+};

@@ -25,6 +25,21 @@ import { useTheme } from "@/hooks/use-theme";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createContext, useContext, useState } from "react";
+import {
+  Dashboard01,
+  ChartBar02,
+  CreditCard01,
+  BriefcaseMinimalistic,
+  Users01,
+  Settings01,
+  Menu01,
+  UserCircle01,
+  MoonStar01,
+  Sun01,
+  Plus01
+} from "@hugeicons/react";
+
+// Remove the lucide-react imports and replace with above
 
 interface SidebarItemProps {
   Icon: React.ComponentType<any>;

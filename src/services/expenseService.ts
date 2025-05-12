@@ -60,8 +60,8 @@ export async function createExpense(expenseData: ExpenseFormData): Promise<Expen
 }
 
 export async function updateExpense(id: string, expenseData: Partial<ExpenseFormData>): Promise<Expense> {
-  const updateData = { ...expenseData };
-  
+  // const updateData = { ...expenseData };
+  const updateData: any = { ...expenseData };
   // Convert Date to ISO string if it exists
   if (updateData.expense_date instanceof Date) {
     updateData.expense_date = updateData.expense_date.toISOString();

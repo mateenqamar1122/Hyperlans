@@ -15,7 +15,7 @@ import { ClientInviteDialog } from "./ClientInviteDialog";
 import { getClientAccess, updateClientAccess } from "@/services/clientAccessService";
 import { ClientAccess } from "@/types/database";
 
-export function ClientAccessCard({ projectId }: { projectId: string }) {
+export function ClientAccessCard({ projectId, project }: { projectId: string; project: any }) {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [clientAccess, setClientAccess] = useState<ClientAccess[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,17 +39,24 @@ export function ClientAccessCard({ projectId }: { projectId: string }) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-medium">Client Access</CardTitle>
-        <Button
-          onClick={() => setIsInviteOpen(true)}
-          variant="outline"
-          size="sm"
-          className="h-8"
-        >
-          <UserPlus className="h-4 w-4 mr-2" />
-          Invite Client
-        </Button>
+      <CardHeader className="space-y-2 pb-2">
+        <div className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg font-medium">Client Access</CardTitle>
+          <Button
+            onClick={() => setIsInviteOpen(true)}
+            variant="outline"
+            size="sm"
+            className="h-8"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Invite Client
+          </Button>
+        </div>
+        {project?.client_name && (
+          <div className="text-sm text-muted-foreground">
+            Project Client: <span className="font-medium text-foreground">{project.client_name}</span>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         {loading ? (
