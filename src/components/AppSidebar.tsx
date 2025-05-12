@@ -304,8 +304,8 @@ const SidebarContent = ({
             "font-semibold text-lg text-gray-800 dark:text-white transition-all duration-300 whitespace-nowrap bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300",
             isOpen ? "opacity-100" : "opacity-0 w-0"
           )}>
-            Hyper
-            <span className="text-indigo-600 dark:text-indigo-400 ml-1 font-bold">Lans</span>
+            Spike
+            <span className="text-indigo-600 dark:text-indigo-400 ml-1 font-bold">Lance</span>
           </span>
         </Link>
         
